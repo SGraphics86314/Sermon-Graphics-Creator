@@ -1,7 +1,6 @@
 // pages/index.tsx
 
 import { useState } from "react";
-import axios from "axios";
 
 export default function Home() {
   const [topic, setTopic] = useState("");
@@ -15,13 +14,18 @@ export default function Home() {
     setOutline("");
 
     try {
-      const response = await axios.post("/api/generate-outline", {
-        topic,
-        verse,
+      const response = await fetch("/api/generate-outline", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ topic, verse }),
       });
 
-      setOutline(response.data.outline);
+      const data = await response.json();
+      setOutline(data.outline || "No outline returned.");
     } catch (error) {
+      console.error(error);
       setOutline("Error generating outline.");
     }
 
