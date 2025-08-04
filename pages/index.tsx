@@ -11,7 +11,7 @@ export default function Home() {
     setImageUrl("");
 
     try {
-      const response = await fetch("/api/generate-graphic", {
+      const response = await fetch("/api/generate-outline", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -20,11 +20,7 @@ export default function Home() {
       });
 
       const data = await response.json();
-      if (data.imageUrl) {
-        setImageUrl(data.imageUrl);
-      } else {
-        setImageUrl("");
-      }
+      setImageUrl(data.imageUrl || ""); // handle image or error
     } catch (error) {
       console.error("Error generating image:", error);
     }
@@ -33,7 +29,7 @@ export default function Home() {
   };
 
   return (
-    <div style={{ maxWidth: "600px", margin: "2rem auto", fontFamily: "Arial, sans-serif" }}>
+    <div style={{ maxWidth: "600px", margin: "2rem auto", fontFamily: "Arial" }}>
       <h1>Sermon Graphic Generator</h1>
       <form onSubmit={handleSubmit}>
         <input
@@ -46,21 +42,14 @@ export default function Home() {
         />
         <button
           type="submit"
-          style={{
-            width: "100%",
-            padding: "10px",
-            backgroundColor: "#0070f3",
-            color: "white",
-            border: "none",
-          }}
+          style={{ width: "100%", padding: "10px", background: "#0070f3", color: "white" }}
         >
           {loading ? "Generating..." : "Generate Graphic"}
         </button>
       </form>
-
       {imageUrl && (
         <div style={{ marginTop: "2rem", textAlign: "center" }}>
-          <img src={imageUrl} alt="Generated Sermon Graphic" style={{ maxWidth: "100%" }} />
+          <img src={imageUrl} alt="Generated graphic" style={{ maxWidth: "100%" }} />
         </div>
       )}
     </div>
