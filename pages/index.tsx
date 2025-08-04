@@ -1,14 +1,17 @@
-
+import { useState } from "react";
 
 export default function Home() {
-  const [prompt, setPrompt] = useState("");
-  const [imageUrl, setImageUrl] = useState("");
+  const [topic, setTopic] = useState("");
+  const [verse, setVerse] = useState("");
+  const [outline, setOutline] = useState("");
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    setImageUrl("");
+    setError("");
+    setOutline("");
 
     try {
       const response = await fetch("/api/generate-outline", {
@@ -16,42 +19,77 @@ export default function Home() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ prompt }),
+        body: JSON.stringify({ topic, verse }),
       });
 
-      const data = await response.json();
-      setImageUrl(data.imageUrl || ""); // handle image or error
-    } catch (error) {
-      console.error("Error generating image:", error);
-    }
+      if (!response.ok) {
+        throw new Error("Failed to generate outline.");
+      }
 
-    setLoading(false);
+      const data = await response.json();
+      setOutline(data.outline || "No outline returned.");
+    } catch (err) {
+      console.error(err);
+      setError("Error generating outline.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
-    <div style={{ maxWidth: "600px", margin: "2rem auto", fontFamily: "Arial" }}>
-      <h1>Sermon Graphic Generator</h1>
+    <div style={{ padding: "2rem", fontFamily: "Arial, sans-serif" }}>
+      <h1>Sermon Outline Generator</h1>
+      <p>Enter your topic and verse to begin.</p>
       <form onSubmit={handleSubmit}>
         <input
           type="text"
-          placeholder="Describe the graphic"
-          value={prompt}
-          onChange={(e) => setPrompt(e.target.value)}
-          style={{ width: "100%", padding: "10px", marginBottom: "10px" }}
+          placeholder="Sermon Topic"
+          value={topic}
+          onChange={(e) => setTopic(e.target.value)}
           required
+          style={{
+            display: "block",
+            marginBottom: "1rem",
+            width: "100%",
+            padding: "0.5rem",
+          }}
+        />
+        <input
+          type="text"
+          placeholder="Optional Bible Verse"
+          value={verse}
+          onChange={(e) => setVerse(e.target.value)}
+          style={{
+            display: "block",
+            marginBottom: "1rem",
+            width: "100%",
+            padding: "0.5rem",
+          }}
         />
         <button
           type="submit"
-          style={{ width: "100%", padding: "10px", background: "#0070f3", color: "white" }}
+          style={{
+            padding: "0.75rem",
+            width: "100%",
+            backgroundColor: "#0070f3",
+            color: "#fff",
+            border: "none",
+            cursor: "pointer",
+          }}
+          disabled={loading}
         >
-          {loading ? "Generating..." : "Generate Graphic"}
+          {loading ? "Generating..." : "Generate Outline"}
         </button>
       </form>
-      {imageUrl && (
-        <div style={{ marginTop: "2rem", textAlign: "center" }}>
-          <img src={imageUrl} alt="Generated graphic" style={{ maxWidth: "100%" }} />
-        </div>
-      )}
+
+      <div style={{ marginTop: "2rem" }}>
+        <h2>Generated Outline:</h2>
+        {error ? (
+          <p style={{ color: "red" }}>{error}</p>
+        ) : (
+          <pre style={{ whiteSpace: "pre-wrap" }}>{outline}</pre>
+        )}
+      </div>
     </div>
   );
 }
