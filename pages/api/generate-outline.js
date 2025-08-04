@@ -23,7 +23,7 @@ export default async function handler(req, res) {
         {
           role: "user",
           content: `Create a sermon outline about '${topic}'${
-            verse ? \` using the Bible verse '\${verse}'\` : ""
+            verse ? ` using the Bible verse ${verse}` : ""
           }. Format it with clear sections like Introduction, Biblical Context, Main Points (with subpoints if needed), Application, and Conclusion.`,
         },
       ],
@@ -37,3 +37,4 @@ export default async function handler(req, res) {
     res.status(500).json({ error: "Failed to generate outline." });
   }
 }
+
