@@ -26,7 +26,7 @@ export default function Home() {
         setImageUrl("");
       }
     } catch (error) {
-      console.error(error);
+      console.error("Error generating image:", error);
     }
 
     setLoading(false);
@@ -38,7 +38,7 @@ export default function Home() {
       <form onSubmit={handleSubmit}>
         <input
           type="text"
-          placeholder="Describe the graphic (e.g. 'Light piercing through darkness')"
+          placeholder="Describe the graphic"
           value={prompt}
           onChange={(e) => setPrompt(e.target.value)}
           style={{ width: "100%", padding: "10px", marginBottom: "10px" }}
@@ -60,7 +60,6 @@ export default function Home() {
 
       {imageUrl && (
         <div style={{ marginTop: "2rem", textAlign: "center" }}>
-          <h2>Generated Graphic:</h2>
           <img src={imageUrl} alt="Generated Sermon Graphic" style={{ maxWidth: "100%" }} />
         </div>
       )}
